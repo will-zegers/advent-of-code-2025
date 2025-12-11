@@ -6,15 +6,6 @@ import (
 	"os"
 )
 
-type JoltagePair struct {
-	tens int
-	ones int
-}
-
-func (pair JoltagePair) value() int {
-	return 10*pair.tens + pair.ones
-}
-
 func main() {
 	input, err := os.Open("input.txt")
 	if err != nil {
@@ -31,7 +22,6 @@ func main() {
 		max_joltage += result
 	}
 
-	// result := compute_maximum_joltage(line)
 	fmt.Println(max_joltage)
 }
 
@@ -55,7 +45,7 @@ func compute_maximum_joltage(content []byte) int {
 		joltages = append(joltages, next_pair)
 	}
 
-	return joltages[len(joltages)-1].value()
+	return joltages[len(joltages)-1].Value()
 }
 
 func combined_value(tens int, ones int) int {
