@@ -16,7 +16,6 @@ struct PaperMatrix {
 
   inline T at(const size_t row, const size_t column) const
   {
-
     return data[indexTo1D(row, column)];
   }
 
