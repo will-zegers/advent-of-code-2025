@@ -3,17 +3,22 @@
 #include <string>
 #include <vector>
 #include <iterator>
-
 #include "paper_matrix.hpp"
 
 typedef char forklift_t;
 
-const size_t INPUT_DIMENSIONS = 142;
+const size_t INPUT_DIMENSIONS = 12;
 
 const char EMPTY = '.';
 const char ROLL = '@';
+const char MARKED_FOR_REMOVAL = '+';
 
-unsigned int countNeighbors(const PaperMatrix<forklift_t>& m, const size_t row, const size_t column)
+bool isOccupiedByRoll(const PaperMatrix<forklift_t>& m, const size_t row, const size_t column)
+{
+  return m.at(row, column) == ROLL || m.at(row, column) == MARKED_FOR_REMOVAL;
+}
+
+unsigned int neighborCount(const PaperMatrix<forklift_t>& m, const size_t row, const size_t column)
 {
   unsigned int numNeighboringRolls = 0;
   for (size_t i = row - 1; i <= row + 1; i++) {
@@ -22,7 +27,7 @@ unsigned int countNeighbors(const PaperMatrix<forklift_t>& m, const size_t row, 
         continue;
       };
 
-      if (m.at(i, j) == ROLL) {
+      if (isOccupiedByRoll(m, i, j)) {
         numNeighboringRolls++;
       }
     }
@@ -31,18 +36,30 @@ unsigned int countNeighbors(const PaperMatrix<forklift_t>& m, const size_t row, 
   return numNeighboringRolls;
 }
 
-unsigned int countNumberRollsAccessible(const PaperMatrix<forklift_t>& m)
+unsigned int countAndMarkAccessibleRolls(PaperMatrix<forklift_t>& m)
 {
   unsigned int numAccessible = 0;
   for (size_t i = 1; i < m.nRows - 1; i++) {
     for (size_t j = 1; j < m.nColumns - 1; j++) {
-      if (m.at(i, j) == ROLL && countNeighbors(m, i, j) < 4) {
+      if (isOccupiedByRoll(m, i, j) && neighborCount(m, i, j) < 4) {
+        m.set(i, j, MARKED_FOR_REMOVAL);
         numAccessible++;
       }
     }
   }
 
   return numAccessible;
+}
+
+void removeMarkedRolls(PaperMatrix<forklift_t>& m)
+{
+  for (size_t i = 1; i < m.nRows - 1; i++) {
+    for (size_t j = 1; j < m.nColumns - 1; j++) {
+      if (m.at(i, j) == MARKED_FOR_REMOVAL) {
+        m.set(i, j, EMPTY);
+      }
+    }
+  }
 }
 
 int main(int argc, char* argv[])
@@ -56,5 +73,14 @@ int main(int argc, char* argv[])
   );
 
   auto matrix = PaperMatrix<forklift_t>(INPUT_DIMENSIONS, data);
-  std::cout << countNumberRollsAccessible(matrix) << std::endl;
+
+  auto numberToRemove = countAndMarkAccessibleRolls(matrix);
+  auto totalRemoved = numberToRemove;
+  while (numberToRemove > 0) {
+    removeMarkedRolls(matrix);
+    numberToRemove = countAndMarkAccessibleRolls(matrix);
+    totalRemoved += numberToRemove;
+  }
+
+  std::cout << totalRemoved << std::endl;
 }

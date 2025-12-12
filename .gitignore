@@ -1,3 +1,7 @@
 target/
-main
+build/
+
 *~
+*.stamp
+
+main

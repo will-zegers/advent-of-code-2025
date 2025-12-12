@@ -20,6 +20,11 @@ struct PaperMatrix {
     return data[indexTo1D(row, column)];
   }
 
+  inline void set(const size_t row, const size_t column, const T value)
+  {
+    data[indexTo1D(row, column)] = value;
+  }
+
   void print() {
     for (int i = 0; i < nRows; i++) {
       for (int j = 0; j < nColumns; j++) {
@@ -31,9 +36,9 @@ struct PaperMatrix {
 
 
 private:
-  const std::vector<T> data;
+  std::vector<T> data;
 
-  size_t indexTo1D(const size_t i, const size_t j) const
+  inline size_t indexTo1D(const size_t i, const size_t j) const
   {
     return nColumns * i + j;
   }

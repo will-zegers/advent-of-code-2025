@@ -3,11 +3,12 @@
 
 set -e
 
-# TMP=$(mktemp)
-# echo $TMP
-# 
-# tr '.' '0' < input.txt > $TMP
-# tr '@' '1' < $TMP > input.txt
+STAMP_FILE="input_ready.stamp"
+
+if [ -f $STAMP_FILE ]; then
+  echo "'input.txt' has already been prepared. No action needed"
+  exit 0
+fi
 
 # We add a frame of empties around input data so we don't have to deal with edge
 # cases where a pointer or index could potentially could out of bounds while
@@ -15,7 +16,7 @@ set -e
 
 # Create a row of '.' for the top and bottom row, spanning the full column width
 COLUMN_COUNT=$(wc -L input.txt | cut -d\  -f1)
-ZERO_ROW=$(printf "%*s\n" $(wc -L input.txt | cut -d\  -f1) | tr " " ".")
+ZERO_ROW=$(printf "%*s\n" $COLUMN_COUNT | tr " " ".")
 
 sed -i "1i $ZERO_ROW" input.txt
 echo $ZERO_ROW >> input.txt
@@ -23,3 +24,5 @@ echo $ZERO_ROW >> input.txt
 # Prepend and append each row with a '.'
 sed -i 's/^/./' ./input.txt
 sed -i 's/$/./' ./input.txt
+
+touch $STAMP_FILE
