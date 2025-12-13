@@ -11,18 +11,37 @@ enum PointType {
 
 type Point = {
   value: number;
-  pointType: PointType;
+  type: PointType;
 }
 
-function main(): void {
+function main(): void
+{
   const input = readInputFile();
-  const points = gatherInputAsPoints(input);
-  const numFreshIngredients = countFreshIngredients(points);
+
+  // part 1
+  const pointsCountIngredients = gatherInputAsPoints(input, (a, b) => {
+    if (a.value === b.value) {
+      return a.type - b.type;
+    }
+    return a.value - b.value;
+  });
+  const numFreshIngredients = countFreshIngredients(pointsCountIngredients);
+
+  // part 2
+  const pointsCountFreshRangeIDs = gatherInputAsPoints(input, (a, b) => {
+    if (a.value === b.value) {
+      return b.type - a.type;
+    }
+    return b.value - a.value;
+  });
+  const freshRangeIDs = countFreshRangeIDs(pointsCountFreshRangeIDs);
 
   console.log(`Number of fresh ingredients: ${numFreshIngredients}`);
+  console.log(`Number of fresh ingredients IDs: ${freshRangeIDs}`);
 }
 
-function readInputFile(filename: string = INPUT_FILE): string[] {
+function readInputFile(filename: string = INPUT_FILE): string[]
+{
   try {
     const input = fs.readFileSync(INPUT_FILE, 'utf-8');
     return input.split(/\r?\n/)
@@ -33,10 +52,12 @@ function readInputFile(filename: string = INPUT_FILE): string[] {
   }
 }
 
-function gatherInputAsPoints(input: string[]): Point[] {
+function gatherInputAsPoints(input: string[], sortFn: (a: Point, b: Point) => number): Point[]
+{
   // Gather up the beginning and end of ID ranges, and ingredient IDs as
   // points as were they to fall on a number line, then sort them numerically
-  // (with ties going in the order RangeBegin < Ingredient < RangeEnd)
+  // (Note: the sorting function and its tie-breakers is dependent on the problem,
+  // hence why its parameterized)
 
   let points: Point[] = [];
   for (const line of input) {
@@ -44,31 +65,27 @@ function gatherInputAsPoints(input: string[]): Point[] {
       let [begin, end] = line.split('-');
       points.push({
         value: +begin,
-        pointType: PointType.RangeBegin,
+        type: PointType.RangeBegin,
       });
       points.push({
         value: +end,
-        pointType: PointType.RangeEnd,
+        type: PointType.RangeEnd,
       })
     } else {
       points.push({
         value: +line,
-        pointType: PointType.Ingredient,
+        type: PointType.Ingredient,
       });
     }
   }
 
-  points.sort((a, b) => {
-    if (a.value === b.value) {
-      return a.pointType - b.pointType
-    }
-    return a.value - b.value;
-  });
+  points.sort(sortFn);
 
   return points;
 }
 
-function countFreshIngredients(points: Point[]): number {
+function countFreshIngredients(points: Point[]): number
+{
   // This is pretty much a segments-and-points algo
   //
   // Use a counter that's incremented whenever we hit a RangeBegin,
@@ -79,7 +96,7 @@ function countFreshIngredients(points: Point[]): number {
 
   let counter = 0, freshIngredients = 0;
   for (const point of points) {
-    switch(point.pointType) {
+    switch(point.type) {
       case PointType.RangeBegin:
         counter++;
         break;
@@ -91,11 +108,44 @@ function countFreshIngredients(points: Point[]): number {
           freshIngredients++;
         }
         break;
-      default:
-        throw new Error(`Invalid PointType ${point.pointType}`)
     }
   }
   return freshIngredients;
+}
+
+function countFreshRangeIDs(points: Point[]): number
+{
+  /// Similar approach to the segment-point solution above.
+  //
+  // This time we're just working backward (i.e., we've sorted descending
+  // order). When the counter is zero and encounter a RangeEnd, we add that
+  // to the total range of IDs, knowing that there'll exist an eventual
+  // beginning. For each RangeEnd, we increment the counter; for each
+  // RangeBegin we decrement it. When we hit a RangeBegin that will decrement
+  // the counter to zero, this indicates the start of some definite range -
+  // possibly with some overlaps in between - so we subtract it off to get
+  // the total interval.
+
+  let counter = 0, freshRangeIDs = 0;
+  for (const point of points) {
+    switch(point.type) {
+      case PointType.RangeBegin:
+        if (counter === 1) {
+          freshRangeIDs -= point.value - 1;
+        }
+        counter--;
+        break;
+      case PointType.RangeEnd:
+        if (counter === 0) {
+          freshRangeIDs += point.value;
+        }
+        counter++;
+        break;
+      case PointType.Ingredient: // Ignore, only care about IDs in ranges
+        break;
+    }
+  }
+  return freshRangeIDs;
 }
 
 main()
