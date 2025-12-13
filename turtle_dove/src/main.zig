@@ -39,7 +39,7 @@ fn check_for_repeating_sequence(number: usize) ?usize {
     }
 
     const upper_bound = @divFloor(digits, 2);
-    for (1..upper_bound+1) |n| {
+    for (1..upper_bound + 1) |n| {
         if (digits % n == 0 and check_for_n_sequence(number_str, n)) {
             return number;
         }
@@ -48,7 +48,7 @@ fn check_for_repeating_sequence(number: usize) ?usize {
 }
 
 fn check_for_n_sequence(number_str: []u8, n: usize) bool {
-    for (number_str[0..number_str.len - n], number_str[n..]) |i, j| {
+    for (number_str[0 .. number_str.len - n], number_str[n..]) |i, j| {
         if (i != j) {
             return false;
         }
@@ -73,7 +73,7 @@ fn check_symmetry(number: usize) ?usize {
 
 fn usize_to_buffer(buffer: []u8, number: usize) []u8 {
     return std.fmt.bufPrint(buffer, "{d}", .{number}) catch {
-        std.debug.print("Bad number in '{s}': {d}", .{INPUT_FILE, number});
+        std.debug.print("Bad number in '{s}': {d}", .{ INPUT_FILE, number });
         @panic("Terminating...");
     };
 }
