@@ -5,6 +5,6 @@
 ### Day 4: Calling Bird (C++)
 ### Day 5: Golden Ring (Typescript)
 ### Day 6: Goose-a-Laying (Lua)
-(Honestly, it sounded cool at first with singular bird names. By day 6 it hit me with how dumb the names would get from here on out. But, I already made this bed...)
+(Beginning to regret this naming scheme)
 ### Day 7: Lord-a-Leaping (Odin)
 
