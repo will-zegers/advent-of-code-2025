@@ -7,6 +7,6 @@
 ### [Day 6: Goose-a-Laying (Lua)](https://github.com/will-zegers/advent-of-code-2025/tree/master/goose_a_laying)
 (Beginning to regret this naming scheme)
 ### [Day 7: Swan-a-Swimming (Odin)](https://github.com/will-zegers/advent-of-code-2025/tree/master/swan_a_swimming)
-### [Day 8: Maid-a-Milking (OCaml)](#)
+### [Day 8: Maid-a-Milking (OCaml)](https://github.com/will-zegers/advent-of-code-2025/tree/master/maid_a_milking)
 (That feels wrong)
 
