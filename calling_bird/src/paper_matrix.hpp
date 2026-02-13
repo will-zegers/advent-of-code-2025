@@ -2,6 +2,7 @@
 #include <vector>
 
 using std::vector;
+using std::size_t;
 
 template <typename T>
 struct PaperMatrix {
@@ -10,9 +11,10 @@ struct PaperMatrix {
   const size_t nColumns;
 
   PaperMatrix(size_t squareDimension, std::vector<T> data)
-      : nRows(squareDimension)
-      , nColumns(squareDimension)
-      , data(data) {}
+    : nRows(squareDimension)
+    , nColumns(squareDimension)
+    , data(data)
+  {}
 
   inline T at(const size_t row, const size_t column) const
   {
